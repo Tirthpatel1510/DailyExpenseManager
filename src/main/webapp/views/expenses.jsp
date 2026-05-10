@@ -106,6 +106,12 @@
 
     <td>
 
+        <a href="${pageContext.request.contextPath}/editExpense?id=<%= expense.getId() %>"
+           class="btn btn-warning btn-sm">
+
+            Edit
+        </a>
+
         <a href="${pageContext.request.contextPath}/deleteExpense?id=<%= expense.getId() %>"
            class="btn btn-danger btn-sm"
            onclick="return confirm('Are you sure?')">

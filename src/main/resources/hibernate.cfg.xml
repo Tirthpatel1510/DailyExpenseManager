@@ -37,6 +37,8 @@
 
         <mapping class="com.expense.model.Expense"/>
 
+        <mapping class="com.expense.model.User"/>
+
     </session-factory>
 
 </hibernate-configuration>

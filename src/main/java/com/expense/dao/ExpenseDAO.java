@@ -141,4 +141,59 @@ public class ExpenseDAO {
 
         return expenses;
     }
+
+    public Expense getExpenseById(int id) {
+
+        Session session = null;
+        Expense expense = null;
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+
+            expense = session.get(Expense.class, id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        return expense;
+    }
+
+    public void updateExpense(Expense expense) {
+
+        Session session = null;
+        Transaction transaction = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            transaction = session.beginTransaction();
+
+            session.update(expense);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
 }
