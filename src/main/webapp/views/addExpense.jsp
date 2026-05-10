@@ -9,7 +9,17 @@
 
 </head>
 
-<body class="container mt-5">
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+            Daily Expense Manager
+        </span>
+    </div>
+</nav>
+
+<div class="container mt-5">
 
 <h2>Add Expense</h2>
 
@@ -72,6 +82,8 @@
     </a>
 
 </form>
+
+</div>
 
 </body>
 </html>

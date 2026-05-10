@@ -14,7 +14,17 @@
 
 </head>
 
-<body class="container mt-5">
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+            Daily Expense Manager
+        </span>
+    </div>
+</nav>
+
+<div class="container mt-5">
 
 <h2 class="mb-4">All Expenses</h2>
 
@@ -23,6 +33,41 @@
 
     Add New Expense
 </a>
+
+<form action="${pageContext.request.contextPath}/filterExpenses"
+      method="get"
+      class="mb-3">
+
+    <select name="category" class="form-select w-25 d-inline">
+
+        <option value="">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Bills">Bills</option>
+
+    </select>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Filter
+    </button>
+
+</form>
+
+<%
+    double total = 0;
+    List<Expense> expenses =
+            (List<Expense>) request.getAttribute("expenses");
+
+    if (expenses != null) {
+        for (Expense expense : expenses) {
+            total += expense.getAmount();
+        }
+    }
+%>
+
+<h4 class="mb-3">Total Expense: ₹ <%= String.format("%.2f", total) %></h4>
 
 <table class="table table-bordered table-striped">
 
@@ -42,9 +87,6 @@
     <tbody>
 
 <%
-    List<Expense> expenses =
-            (List<Expense>) request.getAttribute("expenses");
-
     if (expenses != null) {
 
         for (Expense expense : expenses) {
@@ -65,7 +107,8 @@
     <td>
 
         <a href="${pageContext.request.contextPath}/deleteExpense?id=<%= expense.getId() %>"
-           class="btn btn-danger btn-sm">
+           class="btn btn-danger btn-sm"
+           onclick="return confirm('Are you sure?')">
 
             Delete
         </a>
@@ -82,6 +125,8 @@
     </tbody>
 
 </table>
+
+</div>
 
 </body>
 </html>
