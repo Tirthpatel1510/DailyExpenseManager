@@ -43,6 +43,21 @@ public class FilterExpenseServlet extends HttpServlet {
         request.setAttribute("categories", categories);
         request.setAttribute("categoryTotals", categoryTotals);
 
+        double totalCredit = expenseDAO.getTotalCredit();
+        double totalDebit = expenseDAO.getTotalDebit();
+
+        double balance = totalCredit - totalDebit;
+
+        double monthlySavings = balance;
+
+        request.setAttribute("totalCredit", totalCredit);
+        request.setAttribute("totalDebit", totalDebit);
+        request.setAttribute("balance", balance);
+        request.setAttribute("monthlySavings", monthlySavings);
+
+        Map<String, Double> categoryData = expenseDAO.getCategoryTotals();
+        request.setAttribute("categoryData", categoryData);
+
         RequestDispatcher rd = request.getRequestDispatcher(
                 "views/expenses.jsp");
 

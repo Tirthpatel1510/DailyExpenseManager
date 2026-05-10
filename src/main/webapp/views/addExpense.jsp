@@ -11,11 +11,22 @@
 
 <body>
 
+<%
+if (session == null || session.getAttribute("user") == null) {
+    response.sendRedirect(request.getContextPath() + "/login.jsp");
+    return;
+}
+com.expense.model.User user = (com.expense.model.User) session.getAttribute("user");
+%>
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">
             Daily Expense Manager
         </span>
+        <div class="d-flex">
+            <span class="text-white me-3"><%= user != null ? user.getEmail() : "" %></span>
+            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
+        </div>
     </div>
 </nav>
 
@@ -44,27 +55,7 @@
                required>
     </div>
 
-    <div class="mb-3">
-
-        <label class="form-label">
-            Transaction Type
-        </label>
-
-        <select
-            name="transactionType"
-            class="form-control">
-
-            <option value="Debit">
-                Debit
-            </option>
-
-            <option value="Credit">
-                Credit
-            </option>
-
-        </select>
-
-    </div>
+    <!-- legacy transactionType input removed; using single `type` dropdown below category -->
 
     <div class="mb-3">
 
@@ -90,6 +81,18 @@
 
         </select>
 
+    </div>
+
+    <div class="mb-3">
+        <label>Transaction Type</label>
+
+        <select name="type" class="form-control">
+
+            <option value="Debit">Debit (Expense)</option>
+
+            <option value="Credit">Credit (Income)</option>
+
+        </select>
     </div>
 
     <div

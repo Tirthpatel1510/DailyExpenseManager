@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import jakarta.servlet.http.HttpSession;
+import com.expense.model.User;
 import java.text.SimpleDateFormat;
 
 @WebServlet("/saveExpense")
@@ -46,6 +48,18 @@ public class ExpenseServlet extends HttpServlet {
             expense.setTransactionType(
                     request.getParameter(
                             "transactionType"));
+
+            String type = request.getParameter("type");
+            expense.setType(type);
+
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                Object userObj = session.getAttribute("user");
+                if (userObj != null && userObj instanceof com.expense.model.User) {
+                    com.expense.model.User user = (com.expense.model.User) userObj;
+                    expense.setUserEmail(user.getEmail());
+                }
+            }
 
             ExpenseDAO dao = new ExpenseDAO();
 

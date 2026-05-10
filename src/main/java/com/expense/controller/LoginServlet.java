@@ -15,19 +15,19 @@ public class LoginServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        String username = request.getParameter("username");
+        String email = request.getParameter("email");
 
         String password = request.getParameter("password");
 
         UserDAO dao = new UserDAO();
 
-        boolean valid = dao.validateUser(username, password);
+        com.expense.model.User user = dao.login(email, password);
 
-        if (valid) {
+        if (user != null) {
 
             HttpSession session = request.getSession();
 
-            session.setAttribute("user", username);
+            session.setAttribute("user", user);
 
             response.sendRedirect(
                     request.getContextPath()
@@ -35,8 +35,8 @@ public class LoginServlet extends HttpServlet {
 
         } else {
 
-            response.getWriter()
-                    .println("Invalid Username or Password");
+            request.setAttribute("error", "Invalid Email or Password");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 }

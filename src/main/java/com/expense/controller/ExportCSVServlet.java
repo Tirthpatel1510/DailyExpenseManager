@@ -36,6 +36,7 @@ public class ExportCSVServlet extends HttpServlet {
                         "Title",
                         "Amount",
                         "Category",
+                        "Type",
                         "Date"));
 
         for (Expense e : expenses) {
@@ -45,6 +46,7 @@ public class ExportCSVServlet extends HttpServlet {
                     e.getTitle(),
                     e.getAmount(),
                     e.getCategory(),
+                    e.getType(),
                     e.getExpenseDate());
         }
 

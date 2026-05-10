@@ -18,9 +18,24 @@ public class ViewExpenseServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Session protection: redirect to login if not authenticated
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
         ExpenseDAO expenseDAO = new ExpenseDAO();
 
-        List<Expense> expenses = expenseDAO.getAllExpenses();
+        String userEmail = null;
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof com.expense.model.User) {
+            userEmail = ((com.expense.model.User) userObj).getEmail();
+        }
+
+        List<Expense> expenses = userEmail != null
+                ? expenseDAO.getAllExpenses(userEmail)
+                : expenseDAO.getAllExpenses();
 
         List<String> categories = expenseDAO.getAllCategories();
 

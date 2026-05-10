@@ -7,9 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 public class UserDAO {
-
-    public boolean validateUser(String username,
-            String password) {
+    public User login(String email, String password) {
 
         Session session = null;
 
@@ -20,15 +18,13 @@ public class UserDAO {
                     .openSession();
 
             Query<User> query = session.createQuery(
-                    "FROM User WHERE username=:u AND password=:p",
+                    "FROM User WHERE email=:email AND password=:password",
                     User.class);
 
-            query.setParameter("u", username);
-            query.setParameter("p", password);
+            query.setParameter("email", email);
+            query.setParameter("password", password);
 
-            User user = query.uniqueResult();
-
-            return user != null;
+            return query.uniqueResult();
 
         } catch (Exception e) {
 
@@ -41,6 +37,6 @@ public class UserDAO {
             }
         }
 
-        return false;
+        return null;
     }
 }

@@ -23,6 +23,10 @@ public class Expense {
 
     private String transactionType;
 
+    private String type;
+
+    private String userEmail;
+
     public Expense() {
     }
 
@@ -72,5 +76,21 @@ public class Expense {
 
     public void setTransactionType(String transactionType) {
         this.transactionType = transactionType;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

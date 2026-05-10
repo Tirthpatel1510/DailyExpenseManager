@@ -17,12 +17,23 @@
 <form action="${pageContext.request.contextPath}/login"
       method="post">
 
+<%
+String error = (String) request.getAttribute("error");
+if (error != null) {
+%>
+<p style="color:red;">
+    <%= error %>
+</p>
+<%
+}
+%>
+
     <div class="mb-3">
 
-        <label>Username</label>
+        <label>Email</label>
 
-        <input type="text"
-               name="username"
+        <input type="email"
+               name="email"
                class="form-control"
                required>
     </div>

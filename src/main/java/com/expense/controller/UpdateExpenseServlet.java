@@ -49,6 +49,8 @@ public class UpdateExpenseServlet extends HttpServlet {
         expense.setAmount(amount);
         expense.setCategory(category);
         expense.setExpenseDate(expenseDate);
+        String type = request.getParameter("type");
+        expense.setType(type);
 
         ExpenseDAO dao = new ExpenseDAO();
 

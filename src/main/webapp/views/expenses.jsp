@@ -18,11 +18,23 @@
 
 <body>
 
+<%
+// block direct access and get logged-in user
+if (session == null || session.getAttribute("user") == null) {
+    response.sendRedirect(request.getContextPath() + "/login.jsp");
+    return;
+}
+com.expense.model.User user = (com.expense.model.User) session.getAttribute("user");
+%>
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1">
             Daily Expense Manager
         </span>
+        <div class="d-flex">
+            <span class="text-white me-3"><%= user != null ? user.getEmail() : "" %></span>
+            <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger">Logout</a>
+        </div>
     </div>
 </nav>
 
@@ -305,7 +317,7 @@ chartDataBuilder.append("]");
 
     <td><%= expense.getCategory() %></td>
 
-    <td><%= expense.getTransactionType() %></td>
+    <td><%= expense.getType() %></td>
 
     <td><%= expense.getExpenseDate() %></td>
 

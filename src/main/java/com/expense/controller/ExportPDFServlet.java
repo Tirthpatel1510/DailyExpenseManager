@@ -49,7 +49,7 @@ public class ExportPDFServlet extends HttpServlet {
 
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(5);
+            PdfPTable table = new PdfPTable(6);
 
             table.setWidthPercentage(100);
 
@@ -57,6 +57,7 @@ public class ExportPDFServlet extends HttpServlet {
             table.addCell("Title");
             table.addCell("Amount");
             table.addCell("Category");
+            table.addCell("Type");
             table.addCell("Date");
 
             ExpenseDAO dao = new ExpenseDAO();
@@ -69,6 +70,7 @@ public class ExportPDFServlet extends HttpServlet {
                 table.addCell(e.getTitle());
                 table.addCell(String.valueOf(e.getAmount()));
                 table.addCell(e.getCategory());
+                table.addCell(e.getType());
                 table.addCell(String.valueOf(e.getExpenseDate()));
             }
 

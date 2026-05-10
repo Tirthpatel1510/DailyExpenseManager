@@ -78,6 +78,40 @@ public class ExpenseDAO {
         return expenses;
     }
 
+    public List<Expense> getAllExpenses(String email) {
+
+        Session session = null;
+
+        List<Expense> expenses = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Query<Expense> query = session.createQuery(
+                    "FROM Expense WHERE userEmail = :email",
+                    Expense.class);
+
+            query.setParameter("email", email);
+
+            expenses = query.list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        return expenses;
+    }
+
     public void deleteExpense(int id) {
 
         Session session = null;
@@ -287,7 +321,7 @@ public class ExpenseDAO {
             Double result = session.createQuery(
                     "SELECT SUM(amount) " +
                             "FROM Expense " +
-                            "WHERE transactionType='Credit'",
+                            "WHERE type='Credit'",
                     Double.class)
                     .uniqueResult();
 
@@ -328,7 +362,7 @@ public class ExpenseDAO {
 
                     "SELECT SUM(amount) " +
                             "FROM Expense " +
-                            "WHERE transactionType='Credit' " +
+                            "WHERE type='Credit' " +
                             "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
                             "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
 
@@ -340,7 +374,7 @@ public class ExpenseDAO {
 
                     "SELECT SUM(amount) " +
                             "FROM Expense " +
-                            "WHERE transactionType='Debit' " +
+                            "WHERE type='Debit' " +
                             "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
                             "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
 
@@ -392,7 +426,7 @@ public class ExpenseDAO {
 
                             "FROM Expense " +
 
-                            "WHERE transactionType='Debit' " +
+                            "WHERE type='Debit' " +
 
                             "GROUP BY MONTH(expenseDate)")
 
@@ -433,7 +467,7 @@ public class ExpenseDAO {
 
                             "FROM Expense " +
 
-                            "WHERE transactionType='Debit' " +
+                            "WHERE type='Debit' " +
 
                             "GROUP BY category " +
 
@@ -473,7 +507,7 @@ public class ExpenseDAO {
             Double result = session.createQuery(
                     "SELECT SUM(amount) " +
                             "FROM Expense " +
-                            "WHERE transactionType='Debit'",
+                            "WHERE type='Debit'",
                     Double.class)
                     .uniqueResult();
 
