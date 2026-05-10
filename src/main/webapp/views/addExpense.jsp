@@ -13,7 +13,7 @@
 
 <h2>Add Expense</h2>
 
-<form action="saveExpense" method="post">
+<form action="${pageContext.request.contextPath}/saveExpense" method="post">
 
     <div class="mb-3">
         <label>Title</label>
@@ -65,7 +65,7 @@
         Save Expense
     </button>
 
-    <a href="../viewExpenses"
+    <a href="${pageContext.request.contextPath}/viewExpenses"
        class="btn btn-dark">
 
         View Expenses

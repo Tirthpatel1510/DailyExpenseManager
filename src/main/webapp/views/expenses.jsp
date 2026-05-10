@@ -18,7 +18,7 @@
 
 <h2 class="mb-4">All Expenses</h2>
 
-<a href="addExpense.jsp"
+<a href="${pageContext.request.contextPath}/views/addExpense.jsp"
    class="btn btn-success mb-3">
 
     Add New Expense
@@ -34,6 +34,7 @@
         <th>Amount</th>
         <th>Category</th>
         <th>Date</th>
+        <th>Action</th>
     </tr>
 
     </thead>
@@ -60,6 +61,16 @@
     <td><%= expense.getCategory() %></td>
 
     <td><%= expense.getExpenseDate() %></td>
+
+    <td>
+
+        <a href="${pageContext.request.contextPath}/deleteExpense?id=<%= expense.getId() %>"
+           class="btn btn-danger btn-sm">
+
+            Delete
+        </a>
+
+    </td>
 
 </tr>
 

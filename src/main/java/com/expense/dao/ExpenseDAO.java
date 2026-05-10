@@ -74,4 +74,42 @@ public class ExpenseDAO {
 
         return expenses;
     }
+
+    public void deleteExpense(int id) {
+
+        Session session = null;
+        Transaction transaction = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            transaction = session.beginTransaction();
+
+            Expense expense = session.get(Expense.class, id);
+
+            if (expense != null) {
+
+                session.delete(expense);
+            }
+
+            transaction.commit();
+
+        } catch (Exception e) {
+
+            if (transaction != null) {
+                transaction.rollback();
+            }
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
 }
