@@ -9,9 +9,14 @@ public class ExpenseDAO {
 
     public void saveExpense(Expense expense) {
 
+        Session session = null;
         Transaction transaction = null;
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
 
             transaction = session.beginTransaction();
 
@@ -19,13 +24,23 @@ public class ExpenseDAO {
 
             transaction.commit();
 
+            System.out.println("Expense Saved Successfully!");
+
         } catch (Exception e) {
 
-            if (transaction != null) {
+            if (transaction != null &&
+                    transaction.isActive()) {
+
                 transaction.rollback();
             }
 
             e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+                session.close();
+            }
         }
     }
 }

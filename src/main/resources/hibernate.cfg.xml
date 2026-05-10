@@ -35,6 +35,8 @@
             update
         </property>
 
+        <mapping class="com.expense.model.Expense"/>
+
     </session-factory>
 
 </hibernate-configuration>
