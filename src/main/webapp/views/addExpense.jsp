@@ -46,17 +46,67 @@
 
     <div class="mb-3">
 
-        <label>Category</label>
+        <label class="form-label">
+            Transaction Type
+        </label>
 
-        <select name="category"
-                class="form-control">
+        <select
+            name="transactionType"
+            class="form-control">
 
-            <option>Food</option>
-            <option>Travel</option>
-            <option>Shopping</option>
-            <option>Bills</option>
+            <option value="Debit">
+                Debit
+            </option>
+
+            <option value="Credit">
+                Credit
+            </option>
 
         </select>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            Category
+        </label>
+
+        <select
+            name="category"
+            id="category"
+            class="form-control"
+            onchange="toggleOtherCategory()">
+
+            <option value="Food">Food</option>
+
+            <option value="Travel">Travel</option>
+
+            <option value="Shopping">Shopping</option>
+
+            <option value="Bills">Bills</option>
+
+            <option value="Other">Other</option>
+
+        </select>
+
+    </div>
+
+    <div
+        class="mb-3"
+        id="otherCategoryDiv"
+        style="display:none;">
+
+        <label class="form-label">
+            Custom Category
+        </label>
+
+        <input
+            type="text"
+            name="customCategory"
+            class="form-control"
+            placeholder="Enter category">
+
     </div>
 
     <div class="mb-3">
@@ -84,6 +134,28 @@
 </form>
 
 </div>
+
+<script>
+
+function toggleOtherCategory() {
+
+    let category =
+        document.getElementById("category").value;
+
+    let otherDiv =
+        document.getElementById("otherCategoryDiv");
+
+    if(category === "Other") {
+
+        otherDiv.style.display = "block";
+
+    } else {
+
+        otherDiv.style.display = "none";
+    }
+}
+
+</script>
 
 </body>
 </html>

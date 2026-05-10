@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/filterExpenses")
 public class FilterExpenseServlet extends HttpServlet {
@@ -19,21 +20,28 @@ public class FilterExpenseServlet extends HttpServlet {
 
         String category = request.getParameter("category");
 
-        ExpenseDAO dao = new ExpenseDAO();
+        ExpenseDAO expenseDAO = new ExpenseDAO();
 
         List<Expense> expenses;
 
         if (category == null || category.equals("") || category.equals("All")) {
 
-            expenses = dao.getAllExpenses();
+            expenses = expenseDAO.getAllExpenses();
 
         } else {
 
-            expenses = dao.getExpensesByCategory(category);
+            expenses = expenseDAO.getExpensesByCategory(category);
         }
+
+        List<String> categories = expenseDAO.getAllCategories();
+
+        Map<String, Double> categoryTotals = expenseDAO.getCategoryTotals();
 
         request.setAttribute("expenseList", expenses);
         request.setAttribute("expenses", expenses);
+        request.setAttribute("selectedCategory", category);
+        request.setAttribute("categories", categories);
+        request.setAttribute("categoryTotals", categoryTotals);
 
         RequestDispatcher rd = request.getRequestDispatcher(
                 "views/expenses.jsp");

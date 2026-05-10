@@ -30,12 +30,22 @@ public class ExpenseServlet extends HttpServlet {
                     Double.parseDouble(
                             request.getParameter("amount")));
 
-            expense.setCategory(
-                    request.getParameter("category"));
+            String category = request.getParameter("category");
+
+            if (category.equals("Other")) {
+
+                category = request.getParameter("customCategory");
+            }
+
+            expense.setCategory(category);
 
             expense.setExpenseDate(
                     new SimpleDateFormat("yyyy-MM-dd")
                             .parse(request.getParameter("expenseDate")));
+
+            expense.setTransactionType(
+                    request.getParameter(
+                            "transactionType"));
 
             ExpenseDAO dao = new ExpenseDAO();
 

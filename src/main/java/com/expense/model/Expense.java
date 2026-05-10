@@ -21,6 +21,8 @@ public class Expense {
     @Temporal(TemporalType.DATE)
     private Date expenseDate;
 
+    private String transactionType;
+
     public Expense() {
     }
 
@@ -62,5 +64,13 @@ public class Expense {
 
     public void setExpenseDate(Date expenseDate) {
         this.expenseDate = expenseDate;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 }

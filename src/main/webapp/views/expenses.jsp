@@ -2,6 +2,7 @@
 
 <%@ page import="java.util.List" %>
 <%@ page import="com.expense.model.Expense" %>
+<%@ page import="java.util.Map" %>
 
 <!DOCTYPE html>
 <html>
@@ -35,17 +36,42 @@
 </a>
 
 <form action="${pageContext.request.contextPath}/filterExpenses"
-            method="get"
-            class="d-flex mb-3">
+      method="get"
+      class="d-flex mb-3">
 
-        <select name="category"
-                        class="form-select w-25 me-2">
+<%
+List<String> categories =
+    (List<String>) request.getAttribute("categories");
+%>
 
-        <option value="">All Categories</option>
-        <option value="Food">Food</option>
-        <option value="Travel">Travel</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Bills">Bills</option>
+    <select name="category"
+            class="form-select w-25 me-2">
+
+        <option value=""
+            ${selectedCategory == null || selectedCategory == ''
+            ? 'selected' : ''}>
+            All Categories
+        </option>
+
+<%
+if (categories != null) {
+    for(String cat : categories) {
+%>
+
+        <option value="<%= cat %>"
+            <%= cat.equals(request.getParameter("category"))
+            || cat.equals(request.getAttribute("selectedCategory"))
+            ? "selected"
+            : "" %>>
+
+            <%= cat %>
+
+        </option>
+
+<%
+    }
+}
+%>
 
     </select>
 
@@ -56,12 +82,63 @@
 
 </form>
 
+<%
+String selectedCategory =
+    request.getParameter("category");
+
+if (selectedCategory == null) {
+    selectedCategory =
+        (String) request.getAttribute("selectedCategory");
+}
+
+boolean showChart =
+    selectedCategory == null
+    || selectedCategory.trim().equals("");
+
+Map<String, Double> categoryTotals =
+        (Map<String, Double>) request.getAttribute("categoryTotals");
+
+StringBuilder chartLabelsBuilder = new StringBuilder("[");
+StringBuilder chartDataBuilder = new StringBuilder("[");
+
+if (categoryTotals != null) {
+    boolean first = true;
+
+    for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+        if (!first) {
+            chartLabelsBuilder.append(",");
+            chartDataBuilder.append(",");
+        }
+
+        String safeLabel = entry.getKey()
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
+
+        chartLabelsBuilder.append("\"")
+                .append(safeLabel)
+                .append("\"");
+
+        chartDataBuilder.append(entry.getValue());
+        first = false;
+    }
+}
+
+chartLabelsBuilder.append("]");
+chartDataBuilder.append("]");
+%>
+
+<% if(showChart) { %>
 <h3 class="mt-4">Expense Analytics</h3>
 
-<canvas id="expenseChart"
-        width="400"
-        height="150">
-</canvas>
+<div style="width: 450px; height: 450px; margin:auto;">
+
+    <canvas id="expenseChart"></canvas>
+
+</div>
+
+<textarea id="chartLabelsJson" hidden><%= chartLabelsBuilder.toString() %></textarea>
+<textarea id="chartDataJson" hidden><%= chartDataBuilder.toString() %></textarea>
+<% } %>
 
 <%
     double total = 0;
@@ -81,6 +158,14 @@
 
 <h4 class="mb-3">Total Expense: ₹ <%= String.format("%.2f", total) %></h4>
 
+<h4 class="mt-4 mb-3">
+<%= showChart
+? "All Expenses"
+: selectedCategory + " Expenses" %>
+</h4>
+
+<div class="table-responsive mt-4">
+
 <table class="table table-bordered table-striped">
 
     <thead class="table-dark">
@@ -90,6 +175,7 @@
         <th>Title</th>
         <th>Amount</th>
         <th>Category</th>
+        <th>Type</th>
         <th>Date</th>
         <th>Action</th>
     </tr>
@@ -113,6 +199,8 @@
     <td><%= expense.getAmount() %></td>
 
     <td><%= expense.getCategory() %></td>
+
+    <td><%= expense.getTransactionType() %></td>
 
     <td><%= expense.getExpenseDate() %></td>
 
@@ -146,32 +234,34 @@
 
 </div>
 
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+const chartCanvas = document.getElementById('expenseChart');
 
-const ctx =
-document.getElementById('expenseChart');
+if (chartCanvas) {
+    const labelsJson = document.getElementById('chartLabelsJson');
+    const dataJson = document.getElementById('chartDataJson');
 
-new Chart(ctx, {
+    const labels = JSON.parse(labelsJson ? labelsJson.value : '[]');
+    const data = JSON.parse(dataJson ? dataJson.value : '[]');
 
-    type: 'pie',
-
-    data: {
-
-        labels: ['Food', 'Travel', 'Shopping', 'Bills'],
-
-        datasets: [{
-
-            label: 'Expenses',
-
-            data: [250, 150, 100, 50],
-
-            borderWidth: 1
-
-        }]
-    }
-});
+    new Chart(chartCanvas, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
 
 </script>
 

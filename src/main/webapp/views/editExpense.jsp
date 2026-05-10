@@ -66,6 +66,17 @@ Expense expense =
                required>
     </div>
 
+    <div class="mb-3">
+
+        <label>Date</label>
+
+        <input type="date"
+               name="expenseDate"
+               class="form-control"
+               value="${expense.expenseDate}"
+               required>
+    </div>
+
     <button type="submit"
             class="btn btn-success">
         Update Expense

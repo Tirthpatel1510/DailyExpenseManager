@@ -8,6 +8,8 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @WebServlet("/updateExpense")
 public class UpdateExpenseServlet extends HttpServlet {
@@ -26,12 +28,27 @@ public class UpdateExpenseServlet extends HttpServlet {
 
         String category = request.getParameter("category");
 
+        String expenseDateStr = request.getParameter("expenseDate");
+
+        Date expenseDate = null;
+
+        try {
+
+            expenseDate = new SimpleDateFormat("yyyy-MM-dd")
+                    .parse(expenseDateStr);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
         Expense expense = new Expense();
 
         expense.setId(id);
         expense.setTitle(title);
         expense.setAmount(amount);
         expense.setCategory(category);
+        expense.setExpenseDate(expenseDate);
 
         ExpenseDAO dao = new ExpenseDAO();
 

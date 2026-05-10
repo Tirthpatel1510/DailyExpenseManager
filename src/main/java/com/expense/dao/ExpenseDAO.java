@@ -6,6 +6,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExpenseDAO {
 
@@ -195,5 +197,78 @@ public class ExpenseDAO {
                 session.close();
             }
         }
+    }
+
+    public Map<String, Double> getCategoryTotals() {
+
+        Session session = null;
+
+        Map<String, Double> categoryTotals = new HashMap<>();
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            List<Object[]> results = session.createQuery(
+                    "SELECT category, SUM(amount) " +
+                            "FROM Expense GROUP BY category")
+                    .list();
+
+            for (Object[] row : results) {
+
+                String category = (String) row[0];
+
+                Double total = (Double) row[1];
+
+                categoryTotals.put(category, total);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return categoryTotals;
+    }
+
+    public List<String> getAllCategories() {
+
+        Session session = null;
+
+        List<String> categories = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            categories = session.createQuery(
+                    "SELECT DISTINCT category FROM Expense",
+                    String.class)
+                    .list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return categories;
     }
 }
