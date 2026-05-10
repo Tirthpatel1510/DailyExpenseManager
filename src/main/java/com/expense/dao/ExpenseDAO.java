@@ -4,6 +4,7 @@ import com.expense.model.Expense;
 import com.expense.utility.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import java.util.List;
 
 public class ExpenseDAO {
 
@@ -42,5 +43,35 @@ public class ExpenseDAO {
                 session.close();
             }
         }
+    }
+
+    public List<Expense> getAllExpenses() {
+
+        Session session = null;
+
+        List<Expense> expenses = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            expenses = session
+                    .createQuery("from Expense", Expense.class)
+                    .list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+                session.close();
+            }
+        }
+
+        return expenses;
     }
 }

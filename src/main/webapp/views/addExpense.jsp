@@ -65,6 +65,12 @@
         Save Expense
     </button>
 
+    <a href="../viewExpenses"
+       class="btn btn-dark">
+
+        View Expenses
+    </a>
+
 </form>
 
 </body>
