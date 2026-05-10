@@ -35,10 +35,11 @@
 </a>
 
 <form action="${pageContext.request.contextPath}/filterExpenses"
-      method="get"
-      class="mb-3">
+            method="get"
+            class="d-flex mb-3">
 
-    <select name="category" class="form-select w-25 d-inline">
+        <select name="category"
+                        class="form-select w-25 me-2">
 
         <option value="">All Categories</option>
         <option value="Food">Food</option>
@@ -55,13 +56,24 @@
 
 </form>
 
+<h3 class="mt-4">Expense Analytics</h3>
+
+<canvas id="expenseChart"
+        width="400"
+        height="150">
+</canvas>
+
 <%
     double total = 0;
-    List<Expense> expenses =
-            (List<Expense>) request.getAttribute("expenses");
+    List<Expense> expenseList =
+            (List<Expense>) request.getAttribute("expenseList");
 
-    if (expenses != null) {
-        for (Expense expense : expenses) {
+    if (expenseList == null) {
+        expenseList = (List<Expense>) request.getAttribute("expenses");
+    }
+
+    if (expenseList != null) {
+        for (Expense expense : expenseList) {
             total += expense.getAmount();
         }
     }
@@ -87,9 +99,9 @@
     <tbody>
 
 <%
-    if (expenses != null) {
+        if (expenseList != null) {
 
-        for (Expense expense : expenses) {
+            for (Expense expense : expenseList) {
 %>
 
 <tr>
@@ -133,6 +145,35 @@
 </table>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx =
+document.getElementById('expenseChart');
+
+new Chart(ctx, {
+
+    type: 'pie',
+
+    data: {
+
+        labels: ['Food', 'Travel', 'Shopping', 'Bills'],
+
+        datasets: [{
+
+            label: 'Expenses',
+
+            data: [250, 150, 100, 50],
+
+            borderWidth: 1
+
+        }]
+    }
+});
+
+</script>
 
 </body>
 </html>

@@ -21,12 +21,22 @@ public class FilterExpenseServlet extends HttpServlet {
 
         ExpenseDAO dao = new ExpenseDAO();
 
-        List<Expense> expenseList = dao.getExpensesByCategory(category);
+        List<Expense> expenses;
 
-        request.setAttribute("expenses", expenseList);
+        if (category == null || category.equals("") || category.equals("All")) {
+
+            expenses = dao.getAllExpenses();
+
+        } else {
+
+            expenses = dao.getExpensesByCategory(category);
+        }
+
+        request.setAttribute("expenseList", expenses);
+        request.setAttribute("expenses", expenses);
 
         RequestDispatcher rd = request.getRequestDispatcher(
-                "/views/expenses.jsp");
+                "views/expenses.jsp");
 
         rd.forward(request, response);
     }
