@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.expense.model.Expense" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.*" %>
 
 <!DOCTYPE html>
 <html>
@@ -140,6 +141,86 @@ chartDataBuilder.append("]");
 <textarea id="chartDataJson" hidden><%= chartDataBuilder.toString() %></textarea>
 <% } %>
 
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card bg-success text-white">
+
+            <div class="card-body">
+
+                <h5>Total Credit</h5>
+
+                <h3>
+                    ₹
+                    <%= String.format("%.2f", request.getAttribute("totalCredit")) %>
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card bg-danger text-white">
+
+            <div class="card-body">
+
+                <h5>Total Debit</h5>
+
+                <h3>
+                    ₹
+                    <%= String.format("%.2f", request.getAttribute("totalDebit")) %>
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card bg-primary text-white">
+
+            <div class="card-body">
+
+                <h5>Balance</h5>
+
+                <h3>
+                    ₹
+                    <%= String.format("%.2f", request.getAttribute("balance")) %>
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-warning text-dark">
+
+            <div class="card-body">
+
+                <h5>Monthly Savings</h5>
+
+                <h3>
+                    ₹
+                    <%= String.format("%.2f", request.getAttribute("monthlySavings")) %>
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <%
     double total = 0;
     List<Expense> expenseList =
@@ -163,6 +244,30 @@ chartDataBuilder.append("]");
 ? "All Expenses"
 : selectedCategory + " Expenses" %>
 </h4>
+
+<div class="row mt-4 mb-3">
+
+    <div class="col-md-3">
+        <input type="date" name="fromDate" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="toDate" class="form-control">
+    </div>
+
+    <div class="col-md-2">
+        <a href="${pageContext.request.contextPath}/exportCSV" class="btn btn-success w-100">
+            Download CSV
+        </a>
+    </div>
+
+    <div class="col-md-2">
+        <a href="${pageContext.request.contextPath}/exportPDF" class="btn btn-danger w-100">
+            Download PDF
+        </a>
+    </div>
+
+</div>
 
 <div class="table-responsive mt-4">
 

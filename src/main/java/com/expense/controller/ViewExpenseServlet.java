@@ -36,6 +36,43 @@ public class ViewExpenseServlet extends HttpServlet {
                 "categoryTotals",
                 categoryTotals);
 
+        double totalCredit = expenseDAO.getTotalCredit();
+
+        double totalDebit = expenseDAO.getTotalDebit();
+
+        double balance = totalCredit - totalDebit;
+
+        request.setAttribute(
+                "totalCredit",
+                totalCredit);
+
+        request.setAttribute(
+                "totalDebit",
+                totalDebit);
+
+        request.setAttribute(
+                "balance",
+                balance);
+
+        double monthlySavings = expenseDAO.getMonthlySavings();
+
+        request.setAttribute(
+                "monthlySavings",
+                monthlySavings);
+
+        List<Object[]> trends = expenseDAO.getMonthlyExpenseTrends();
+
+        request.setAttribute(
+                "trends",
+                trends);
+
+        Object[] highestCategory = expenseDAO
+                .getHighestSpendingCategory();
+
+        request.setAttribute(
+                "highestCategory",
+                highestCategory);
+
         request.getRequestDispatcher(
                 "views/expenses.jsp")
                 .forward(request, response);

@@ -271,4 +271,229 @@ public class ExpenseDAO {
 
         return categories;
     }
+
+    public double getTotalCredit() {
+
+        Session session = null;
+
+        double total = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double result = session.createQuery(
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE transactionType='Credit'",
+                    Double.class)
+                    .uniqueResult();
+
+            if (result != null) {
+
+                total = result;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return total;
+    }
+
+    public double getMonthlySavings() {
+
+        Session session = null;
+
+        double credit = 0;
+        double debit = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double creditResult = session.createQuery(
+
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE transactionType='Credit' " +
+                            "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
+                            "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
+
+                    Double.class)
+
+                    .uniqueResult();
+
+            Double debitResult = session.createQuery(
+
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE transactionType='Debit' " +
+                            "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
+                            "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
+
+                    Double.class)
+
+                    .uniqueResult();
+
+            if (creditResult != null) {
+
+                credit = creditResult;
+            }
+
+            if (debitResult != null) {
+
+                debit = debitResult;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return credit - debit;
+    }
+
+    public List<Object[]> getMonthlyExpenseTrends() {
+
+        Session session = null;
+
+        List<Object[]> results = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            results = session.createQuery(
+
+                    "SELECT MONTH(expenseDate), " +
+                            "SUM(amount) " +
+
+                            "FROM Expense " +
+
+                            "WHERE transactionType='Debit' " +
+
+                            "GROUP BY MONTH(expenseDate)")
+
+                    .list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return results;
+    }
+
+    public Object[] getHighestSpendingCategory() {
+
+        Session session = null;
+
+        Object[] result = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            result = (Object[])
+
+            session.createQuery(
+
+                    "SELECT category, SUM(amount) " +
+
+                            "FROM Expense " +
+
+                            "WHERE transactionType='Debit' " +
+
+                            "GROUP BY category " +
+
+                            "ORDER BY SUM(amount) DESC")
+
+                    .setMaxResults(1)
+
+                    .uniqueResult();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return result;
+    }
+
+    public double getTotalDebit() {
+
+        Session session = null;
+
+        double total = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double result = session.createQuery(
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE transactionType='Debit'",
+                    Double.class)
+                    .uniqueResult();
+
+            if (result != null) {
+
+                total = result;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return total;
+    }
 }
