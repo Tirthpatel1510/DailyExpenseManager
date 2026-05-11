@@ -17,6 +17,8 @@ public class User {
 
     private String email;
 
+    private double budget;
+
     public int getId() {
         return id;
     }
@@ -47,5 +49,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 }

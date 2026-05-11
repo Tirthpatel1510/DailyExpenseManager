@@ -18,46 +18,66 @@ public class UpdateExpenseServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        int id = Integer.parseInt(
-                request.getParameter("id"));
+        HttpSession session = request.getSession();
+        com.expense.model.User user = (com.expense.model.User) session.getAttribute("user");
 
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String idStr = request.getParameter("id");
         String title = request.getParameter("title");
-
-        double amount = Double.parseDouble(
-                request.getParameter("amount"));
-
+        String amountStr = request.getParameter("amount");
         String category = request.getParameter("category");
-
         String expenseDateStr = request.getParameter("expenseDate");
+        String type = request.getParameter("type");
 
+        // Validation
+        String errorMsg = null;
+        int id = 0;
+        double amount = 0;
         Date expenseDate = null;
 
         try {
-
-            expenseDate = new SimpleDateFormat("yyyy-MM-dd")
-                    .parse(expenseDateStr);
-
+            id = Integer.parseInt(idStr);
+            if (title == null || title.trim().isEmpty()) {
+                errorMsg = "Title is required";
+            } else if (amountStr == null || amountStr.trim().isEmpty()) {
+                errorMsg = "Amount is required";
+            } else {
+                amount = Double.parseDouble(amountStr);
+                if (amount <= 0) {
+                    errorMsg = "Amount must be greater than zero";
+                }
+            }
+            
+            if (errorMsg == null) {
+                expenseDate = new SimpleDateFormat("yyyy-MM-dd").parse(expenseDateStr);
+            }
         } catch (Exception e) {
+            errorMsg = "Invalid input data: " + e.getMessage();
+        }
 
-            e.printStackTrace();
+        if (errorMsg != null) {
+            request.setAttribute("error", errorMsg);
+            request.getRequestDispatcher("editExpense?id=" + idStr).forward(request, response);
+            return;
         }
 
         Expense expense = new Expense();
-
         expense.setId(id);
         expense.setTitle(title);
         expense.setAmount(amount);
         expense.setCategory(category);
         expense.setExpenseDate(expenseDate);
-        String type = request.getParameter("type");
         expense.setType(type);
+        expense.setTransactionType(type);
+        expense.setEmail(user.getEmail()); // Security: Ensure email is linked to current user
 
-        ExpenseDAO dao = new ExpenseDAO();
+        com.expense.service.ExpenseService service = new com.expense.service.ExpenseService();
+        service.updateExpense(expense);
 
-        dao.updateExpense(expense);
-
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/viewExpenses");
+        response.sendRedirect(request.getContextPath() + "/viewExpenses?msg=Expense updated successfully");
     }
 }

@@ -13,7 +13,7 @@
         </property>
 
         <property name="hibernate.connection.url">
-            jdbc:mysql://localhost:3306/expense_manager
+            jdbc:mysql://localhost:3306/em
         </property>
 
         <property name="hibernate.connection.username">

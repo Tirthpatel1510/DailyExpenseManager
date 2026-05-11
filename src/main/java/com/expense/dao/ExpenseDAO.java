@@ -841,4 +841,49 @@ public class ExpenseDAO {
 
         return total;
     }
+
+    public List<Expense> searchExpenses(String query, String email) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query<Expense> q = session.createQuery(
+                "from Expense where email=:email and (title like :query or category like :query)",
+                Expense.class);
+        q.setParameter("email", email);
+        q.setParameter("query", "%" + query + "%");
+        List<Expense> expenses = q.list();
+        session.close();
+        return expenses;
+    }
+
+    public List<Expense> getExpensesByDateRange(String email, java.util.Date startDate, java.util.Date endDate) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query<Expense> q = session.createQuery(
+                "from Expense where email=:email and expenseDate between :start and :end order by expenseDate desc",
+                Expense.class);
+        q.setParameter("email", email);
+        q.setParameter("start", startDate);
+        q.setParameter("end", endDate);
+        List<Expense> expenses = q.list();
+        session.close();
+        return expenses;
+    }
+
+    public List<Expense> getPaginatedExpenses(String email, int offset, int limit) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query<Expense> q = session.createQuery("from Expense where email=:email order by expenseDate desc", Expense.class);
+        q.setParameter("email", email);
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        List<Expense> expenses = q.list();
+        session.close();
+        return expenses;
+    }
+
+    public long getExpenseCount(String email) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Query<Long> q = session.createQuery("select count(e.id) from Expense e where e.email=:email", Long.class);
+        q.setParameter("email", email);
+        long count = q.uniqueResult();
+        session.close();
+        return count;
+    }
 }
