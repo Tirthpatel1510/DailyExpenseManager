@@ -5,6 +5,7 @@ import com.expense.utility.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,34 +81,21 @@ public class ExpenseDAO {
 
     public List<Expense> getAllExpenses(String email) {
 
-        Session session = null;
+        Session session = HibernateUtil
+                .getSessionFactory()
+                .openSession();
 
-        List<Expense> expenses = null;
+        Query<Expense> query = session.createQuery(
+                "from Expense where email=:email",
+                Expense.class);
 
-        try {
+        query.setParameter(
+                "email",
+                email);
 
-            session = HibernateUtil
-                    .getSessionFactory()
-                    .openSession();
+        List<Expense> expenses = query.list();
 
-            Query<Expense> query = session.createQuery(
-                    "FROM Expense WHERE userEmail = :email",
-                    Expense.class);
-
-            query.setParameter("email", email);
-
-            expenses = query.list();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        } finally {
-
-            if (session != null) {
-                session.close();
-            }
-        }
+        session.close();
 
         return expenses;
     }
@@ -174,6 +162,26 @@ public class ExpenseDAO {
                 session.close();
             }
         }
+
+        return expenses;
+    }
+
+    public List<Expense> filterExpenses(String category, String email) {
+
+        Session session = HibernateUtil
+                .getSessionFactory()
+                .openSession();
+
+        Query<Expense> query = session.createQuery(
+                "FROM Expense WHERE category = :category AND email = :email",
+                Expense.class);
+
+        query.setParameter("category", category);
+        query.setParameter("email", email);
+
+        List<Expense> expenses = query.list();
+
+        session.close();
 
         return expenses;
     }
@@ -274,6 +282,49 @@ public class ExpenseDAO {
         return categoryTotals;
     }
 
+    public Map<String, Double> getCategoryTotals(String userEmail) {
+
+        Session session = null;
+
+        Map<String, Double> categoryTotals = new HashMap<>();
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            List<Object[]> results = session.createQuery(
+                    "SELECT category, SUM(amount) " +
+                            "FROM Expense WHERE email = :email " +
+                            "GROUP BY category")
+                    .setParameter("email", userEmail)
+                    .list();
+
+            for (Object[] row : results) {
+
+                String category = (String) row[0];
+
+                Double total = (Double) row[1];
+
+                categoryTotals.put(category, total);
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return categoryTotals;
+    }
+
     public List<String> getAllCategories() {
 
         Session session = null;
@@ -289,6 +340,39 @@ public class ExpenseDAO {
             categories = session.createQuery(
                     "SELECT DISTINCT category FROM Expense",
                     String.class)
+                    .list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return categories;
+    }
+
+    public List<String> getAllCategories(String userEmail) {
+
+        Session session = null;
+
+        List<String> categories = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            categories = session.createQuery(
+                    "SELECT DISTINCT category FROM Expense WHERE email = :email",
+                    String.class)
+                    .setParameter("email", userEmail)
                     .list();
 
         } catch (Exception e) {
@@ -327,6 +411,45 @@ public class ExpenseDAO {
 
             if (result != null) {
 
+                total = result;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return total;
+    }
+
+    public double getTotalCredit(String userEmail) {
+
+        Session session = null;
+
+        double total = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double result = session.createQuery(
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE email = :email AND type='Credit'",
+                    Double.class)
+                    .setParameter("email", userEmail)
+                    .uniqueResult();
+
+            if (result != null) {
                 total = result;
             }
 
@@ -407,6 +530,70 @@ public class ExpenseDAO {
         return credit - debit;
     }
 
+    public double getMonthlySavings(String userEmail) {
+
+        Session session = null;
+
+        double credit = 0;
+        double debit = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double creditResult = session.createQuery(
+
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE email = :email AND type='Credit' " +
+                            "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
+                            "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
+
+                    Double.class)
+
+                    .setParameter("email", userEmail)
+                    .uniqueResult();
+
+            Double debitResult = session.createQuery(
+
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE email = :email AND type='Debit' " +
+                            "AND MONTH(expenseDate)=MONTH(CURRENT_DATE()) " +
+                            "AND YEAR(expenseDate)=YEAR(CURRENT_DATE())",
+
+                    Double.class)
+
+                    .setParameter("email", userEmail)
+                    .uniqueResult();
+
+            if (creditResult != null) {
+
+                credit = creditResult;
+            }
+
+            if (debitResult != null) {
+
+                debit = debitResult;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return credit - debit;
+    }
+
     public List<Object[]> getMonthlyExpenseTrends() {
 
         Session session = null;
@@ -430,6 +617,47 @@ public class ExpenseDAO {
 
                             "GROUP BY MONTH(expenseDate)")
 
+                    .list();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return results;
+    }
+
+    public List<Object[]> getMonthlyExpenseTrends(String userEmail) {
+
+        Session session = null;
+
+        List<Object[]> results = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            results = session.createQuery(
+
+                    "SELECT MONTH(expenseDate), " +
+                            "SUM(amount) " +
+
+                            "FROM Expense " +
+
+                            "WHERE email = :email AND type='Debit' " +
+
+                            "GROUP BY MONTH(expenseDate)")
+
+                    .setParameter("email", userEmail)
                     .list();
 
         } catch (Exception e) {
@@ -492,6 +720,49 @@ public class ExpenseDAO {
         return result;
     }
 
+    public Object[] getHighestSpendingCategory(String userEmail) {
+
+        Session session = null;
+
+        Object[] result = null;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            result = (Object[]) session.createQuery(
+
+                    "SELECT category, SUM(amount) " +
+
+                            "FROM Expense " +
+
+                            "WHERE email = :email AND type='Debit' " +
+
+                            "GROUP BY category " +
+
+                            "ORDER BY SUM(amount) DESC")
+
+                    .setParameter("email", userEmail)
+                    .setMaxResults(1)
+                    .uniqueResult();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return result;
+    }
+
     public double getTotalDebit() {
 
         Session session = null;
@@ -509,6 +780,46 @@ public class ExpenseDAO {
                             "FROM Expense " +
                             "WHERE type='Debit'",
                     Double.class)
+                    .uniqueResult();
+
+            if (result != null) {
+
+                total = result;
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            if (session != null) {
+
+                session.close();
+            }
+        }
+
+        return total;
+    }
+
+    public double getTotalDebit(String userEmail) {
+
+        Session session = null;
+
+        double total = 0;
+
+        try {
+
+            session = HibernateUtil
+                    .getSessionFactory()
+                    .openSession();
+
+            Double result = session.createQuery(
+                    "SELECT SUM(amount) " +
+                            "FROM Expense " +
+                            "WHERE email = :email AND type='Debit'",
+                    Double.class)
+                    .setParameter("email", userEmail)
                     .uniqueResult();
 
             if (result != null) {

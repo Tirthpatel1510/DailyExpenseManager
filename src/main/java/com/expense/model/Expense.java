@@ -25,7 +25,7 @@ public class Expense {
 
     private String type;
 
-    private String userEmail;
+    private String email;
 
     public Expense() {
     }
@@ -86,11 +86,11 @@ public class Expense {
         this.type = type;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
