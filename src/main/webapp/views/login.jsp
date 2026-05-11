@@ -54,6 +54,13 @@ if (error != null) {
         Login
     </button>
 
+    <a href="register.jsp"
+class="btn btn-dark w-100 mt-2">
+
+Create Account
+
+</a>
+
 </form>
 
 </body>

@@ -21,7 +21,7 @@ public class ViewExpenseServlet extends HttpServlet {
         // Session protection: redirect to login if not authenticated
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("views/login.jsp");
             return;
         }
 
