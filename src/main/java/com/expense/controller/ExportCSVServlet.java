@@ -20,36 +20,45 @@ public class ExportCSVServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition",
-                "attachment; filename=expenses.csv");
+        HttpSession session = request.getSession();
+        com.expense.model.User user = (com.expense.model.User) session.getAttribute("user");
 
-        ExpenseDAO dao = new ExpenseDAO();
-
-        List<Expense> expenses = dao.getAllExpenses();
-
-        PrintWriter writer = response.getWriter();
-
-        CSVPrinter csvPrinter = new CSVPrinter(writer,
-                CSVFormat.DEFAULT.withHeader(
-                        "ID",
-                        "Title",
-                        "Amount",
-                        "Category",
-                        "Type",
-                        "Date"));
-
-        for (Expense e : expenses) {
-
-            csvPrinter.printRecord(
-                    e.getId(),
-                    e.getTitle(),
-                    e.getAmount(),
-                    e.getCategory(),
-                    e.getType(),
-                    e.getExpenseDate());
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
         }
 
-        csvPrinter.flush();
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=expenses_" + user.getEmail() + ".csv");
+
+        ExpenseDAO dao = new ExpenseDAO();
+        List<Expense> expenses;
+
+        String fromDateStr = request.getParameter("fromDate");
+        String toDateStr = request.getParameter("toDate");
+
+        try {
+            if (fromDateStr != null && !fromDateStr.isEmpty() && toDateStr != null && !toDateStr.isEmpty()) {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date startDate = sdf.parse(fromDateStr);
+                java.util.Date endDate = sdf.parse(toDateStr);
+                expenses = dao.getExpensesByDateRange(user.getEmail(), startDate, endDate);
+            } else {
+                expenses = dao.getAllExpenses(user.getEmail());
+            }
+
+            PrintWriter writer = response.getWriter();
+            CSVPrinter csvPrinter = new CSVPrinter(writer,
+                    CSVFormat.DEFAULT.withHeader("ID", "Title", "Amount", "Category", "Type", "Date"));
+
+            for (Expense e : expenses) {
+                csvPrinter.printRecord(
+                        e.getId(), e.getTitle(), e.getAmount(), e.getCategory(), e.getType(), e.getExpenseDate());
+            }
+            csvPrinter.flush();
+            csvPrinter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

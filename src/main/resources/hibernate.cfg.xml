@@ -13,7 +13,7 @@
         </property>
 
         <property name="hibernate.connection.url">
-            jdbc:mysql://localhost:3306/expense_manager
+            jdbc:mysql://mysql.railway.internal:3306/railway
         </property>
 
         <property name="hibernate.connection.username">
@@ -21,6 +21,7 @@
         </property>
 
         <property name="hibernate.connection.password">
+            vazylmQdxblHMxlqcZkJHjNwIcnHbknd
         </property>
 
         <property name="hibernate.dialect">

@@ -6,35 +6,25 @@ import com.expense.utility.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.Transaction;
+import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Data Access Object for User related database operations.
+ */
 public class UserDAO {
+    /**
+     * Authenticates a user by email and password.
+     * @param email User email
+     * @param password Plain text password
+     * @return User object if authenticated, null otherwise
+     */
     public User login(String email, String password) {
 
-        Session session = null;
+        User user = getUserByEmail(email);
 
-        try {
-
-            session = HibernateUtil
-                    .getSessionFactory()
-                    .openSession();
-
-            Query<User> query = session.createQuery(
-                    "FROM User WHERE email=:email AND password=:password",
-                    User.class);
-
-            query.setParameter("email", email);
-            query.setParameter("password", password);
-
-            return query.uniqueResult();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-        } finally {
-
-            if (session != null) {
-                session.close();
+        if (user != null && user.getPassword() != null && user.getPassword().startsWith("$2")) {
+            if (BCrypt.checkpw(password, user.getPassword())) {
+                return user;
             }
         }
 
@@ -139,5 +129,19 @@ public class UserDAO {
         }
 
         return false;
+    }
+
+    public void updateUser(User user) {
+        Transaction tx = null;
+        try {
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            tx = session.beginTransaction();
+            session.update(user);
+            tx.commit();
+            session.close();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
     }
 }
